@@ -9,7 +9,7 @@
 
 import * as xml2js from 'xml2js';
 import * as fs from 'fs';
-import { Chant, NeumeComponentAQ, NeumeComponentSQ, Syllable, SyllableWord, getNeumeComponentList, toSeptenary } from '../utility/components.js';
+import { Chant, NeumeComponentAQ, NeumeComponentSQ, NeumeComponentOH, Syllable, SyllableWord, getNeumeComponentList, toSeptenary } from '../utility/components.js';
 import { Octokit } from "@octokit/core";
 
 /**
@@ -40,7 +40,10 @@ function parseMEIContentToJSON(meiContent) {
  */
 function getNotationType(meiJSON) {
     const lines = meiJSON.mei.music[0].body[0].mdiv[0].score[0].scoreDef[0].staffGrp[0].staffDef[0].$.lines;
-    if (lines > 1) {
+    if (lines == null || lines == 0){
+        return "old_hispanic";
+    }
+    else if (lines > 1) {
         return "square";
     } else {
         return "aquitanian";
@@ -52,9 +55,14 @@ function getNotationType(meiJSON) {
  * @returns {string[]} the URL of the file on the PEM
  */
 function getPEMUrls(meiJSON) {
-    const urls = meiJSON.mei.meiHead[0].manifestationList[0].manifestation[0].itemList[0].item[0].$.target;
-    const url = urls.split('and');
-    return url;
+    let urls = [];
+    const check = meiJSON.mei.meiHead[0].manifestationList;
+    if (check != null){
+        urls = meiJSON.mei.meiHead[0].manifestationList[0].manifestation[0].itemList[0].item[0].$.target;
+        const url = urls.split('and');
+        return url;
+    }
+    return [];
 }
 
 /**
@@ -87,6 +95,10 @@ function getClefInformation(meiJSON, notationType, modeDescription) {
  */
 function getChantTitle(meiJSON) {
     let title = meiJSON.mei.meiHead[0].fileDesc[0].titleStmt[0].title[0]._;
+    if (title == null){
+        title = meiJSON.mei.meiHead[0].fileDesc[0].titleStmt[0].title[0];
+    }
+
     // Remove all white spaces
     const whitespaces = /[\n\t\r]/g;
     title = title.replace(whitespaces, "");
@@ -100,12 +112,15 @@ function getChantTitle(meiJSON) {
  * @param {JSON} meiJSON 
  */
 function getCantusId(meiJSON) {
-    const cantusIdInfo = meiJSON.mei.meiHead[0].fileDesc[0].titleStmt[0].title[0].identifier[0];
-
+    const check = meiJSON.mei.meiHead[0].fileDesc[0].titleStmt[0].title[0].identifier;
     let cantusId = "";
-    // Making sure that the information is type "CantusID"
-    if (cantusIdInfo.$.type == "CantusID") {
-        cantusId = cantusIdInfo._
+    if (check != null){
+        const cantusIdInfo = meiJSON.mei.meiHead[0].fileDesc[0].titleStmt[0].title[0].identifier[0];
+
+        // Making sure that the information is type "CantusID"
+        if (cantusIdInfo.$.type == "CantusID") {
+            cantusId = cantusIdInfo._
+        }
     }
     return cantusId;
 }
@@ -116,8 +131,12 @@ function getCantusId(meiJSON) {
  * @returns {string} the source of the chant
  */
 function getSource(meiJSON) {
-    const source = meiJSON.mei.meiHead[0].manifestationList[0].manifestation[0].itemList[0].item[0].identifier[0];
-    return source;
+    const check = meiJSON.mei.meiHead[0].manifestationList;
+    if (check != null){
+        const source = meiJSON.mei.meiHead[0].manifestationList[0].manifestation[0].itemList[0].item[0].identifier[0];
+        return source;
+    }
+    return "";
 }
 
 function getAllSyllables(meiJSON) {
@@ -133,9 +152,15 @@ function getAllSyllables(meiJSON) {
  */
 function parseToSyllableObject(syllable, notationType) {
     const syl = syllable.syl[0];
-    const sylWordId = syl.$["xml:id"];
-    const sylWordText = syl._;
-    const sylWordPosition = syl.$.wordpos;
+    const check = syl.$;
+    let sylWordId = "";
+    let sylWordPosition = "";
+    let sylWordText = syl;
+    if (check != null){
+        sylWordId = syl.$["xml:id"];
+        sylWordPosition = syl.$.wordpos;
+        sylWordText = syl._;
+    }
     // Creating a SyllableText object
     const syllableWordObject = new SyllableWord(sylWordId, sylWordText, sylWordPosition);
 
@@ -184,12 +209,23 @@ function parseToSyllableObject(syllable, notationType) {
 
                     const nc_AQ = new NeumeComponentAQ(ncId, ncTilt, ncCurve, ncOrnamental, loc);
                     neumeComponents.push(nc_AQ);
+                } else if (notationType == "old_hispanic") {
+                    // Getting the necessary attribute of NeumeComponentOH
+                    const intm = nc.$.intm;
+
+                    const nc_OH = new NeumeComponentOH(ncId, ncTilt, ncCurve, ncOrnamental, intm);
+                    neumeComponents.push(nc_OH);
                 }
             }
         }
     }
     // Creating a Syllable object
-    const id = syllable.$["xml:id"];
+    const check2 = syllable.$;
+    let id = "";
+    if (check2 != null){
+        id = syllable.$["xml:id"];
+    }
+    //const id = syllable.$["xml:id"];
     const syllableObj = new Syllable(id, syllableWordObject, neumeComponents);
     return syllableObj;
 }
@@ -703,8 +739,10 @@ const octokit = new Octokit({
     // auth: 'YOUR-TOKEN'
 })
 
-const OWNER = 'ECHOES-from-the-Past'
-const REPO = 'GABCtoMEI'
+//const OWNER = 'ECHOES-from-the-Past'
+//const REPO = 'GABCtoMEI'
+const OWNER = 'DeannaLC'
+const REPO = 'MEI-Samples'
 
 // Retrieve the directory tree
 let data = await octokit.request(`GET /repos/${OWNER}/${REPO}/git/trees/main`, {

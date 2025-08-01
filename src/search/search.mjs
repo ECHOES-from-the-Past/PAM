@@ -13,6 +13,9 @@ export function filterByMusicScript(chantList, musicScripts) {
         } else if (musicScripts.square && chant.notationType == "square") {
             return true;
         }
+        else if (musicScripts.old_hispanic && chant.notationType == "old_hispanic") {
+            return true;
+        }
         return false;
     });
 

@@ -79,7 +79,7 @@
      * @return {number[]}
      */
     function filterValidContourInput(inputStr) {
-        const numericInputFilter = /\+?\-?\d|[uds]/g;
+        const numericInputFilter = /\+?\-?\d|[nuds]/g;
         let melodyList = inputStr.match(numericInputFilter);
 
         if (melodyList != null) {

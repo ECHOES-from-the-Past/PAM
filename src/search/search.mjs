@@ -99,26 +99,34 @@ function matchChantWithContour(chant, contourArray) {
 
         //Since Old Hispanic only uses current note (not prev and current), uses a separate if case
         if (chantNotationType == "old_hispanic"){
-            let all = [];
-            for (let i = 0; i < ncArray.length; i++){
-                all.push(ncArray[i].intm);
-            }
-
             for (let i_search = 0; i_search < contourArray.length; i_search++){
-                if ((contourArray[i_search] == "u" && ncArray[i_nc + i_search].intm == "u")
+                //first case for quilisma - check if an ornamental exists, then check if it's a quilisma
+                if (contourArray[i_search] == "q" && ncArray[i_nc + i_search].ornamental != null){
+                    if (ncArray[i_nc + i_search].ornamental.type == "quilisma"){
+                        patternFound.push(ncArray[i_nc + i_search]);
+                    }
+                    else{
+                        patternFound = [];
+                        break;
+                    }
+                }
+                //use intm to check whether it matches current contour
+                else if ((contourArray[i_search] == "u" && ncArray[i_nc + i_search].intm == "u")
                      || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == "n")
                      || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == null)
                      || (contourArray[i_search] == "d" && ncArray[i_nc + i_search].intm == "d")
                      || (contourArray[i_search] == "s" && ncArray[i_nc + i_search].intm == "s")
                 ) {
-                    patternFound.push(ncArray[i_nc + i_search])
-                } else {
+                    patternFound.push(ncArray[i_nc + i_search]);
+                }
+                else {
                     patternFound = [];
                     break;
                 }
             }
         }
 
+        //Aquitanian and Square cases
         else{
             patternFound.push(ncArray[i_nc]);
 

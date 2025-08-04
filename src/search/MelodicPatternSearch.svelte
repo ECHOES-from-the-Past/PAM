@@ -79,7 +79,7 @@
      * @return {number[]}
      */
     function filterValidContourInput(inputStr) {
-        const numericInputFilter = /\+?\-?\d|[nuds]/g;
+        const numericInputFilter = /\+?\-?\d|[qnuds]/g;
         let melodyList = inputStr.match(numericInputFilter);
 
         if (melodyList != null) {
@@ -366,6 +366,12 @@
                                 </li>
                                 <li>
                                     <code>s</code> for the same note (unison)
+                                </li>
+                                <li>
+                                    <code>n</code> (only in Old Hispanic) unknown/missing interval e.g. first note of a neume
+                                </li>
+                                <li>
+                                    <code>q</code> (only in Old Hispanic) check if note is a quilisma
                                 </li>
                                 <li>
                                     Example of a search query:

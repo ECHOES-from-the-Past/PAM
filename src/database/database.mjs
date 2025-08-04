@@ -174,9 +174,16 @@ function parseToSyllableObject(syllable, notationType) {
             }
             // Iterating through all the <nc> in the neume
             for (let nc of neume.nc) {
-                const ncId = nc.$["xml:id"];
-                let ncTilt = nc.$.tilt ? nc.$.tilt : null;
-                let ncCurve = nc.$.curve ? nc.$.curve : null;
+                let ncId = "";
+                let ncTilt = null;
+                let ncCurve = null;
+                if (nc.$ != null){
+                    ncId = nc.$["xml:id"];
+                    ncTilt = nc.$.tilt ? nc.$.tilt : null;
+                    ncCurve = nc.$.curve ? nc.$.curve : null;
+                }
+                //let ncTilt = nc.$.tilt ? nc.$.tilt : null;
+                //let ncCurve = nc.$.curve ? nc.$.curve : null;
 
                 let ncOrnamental = null;
                 nc.liquescent ? ncOrnamental = {
@@ -184,10 +191,17 @@ function parseToSyllableObject(syllable, notationType) {
                     "id": nc.liquescent[0].$["xml:id"]
                 } : null;
 
-                nc.quilisma ? ncOrnamental = {
-                    "type": "quilisma",
-                    "id": nc.quilisma[0].$["xml:id"]
-                } : null;
+                if (nc.quilisma){
+                    let checkQid = nc.quilisma[0].$;
+                    let qId = "";
+                    if (checkQid != null){
+                        qId = nc.quilisma[0].$["xml:id"];
+                    }
+                    ncOrnamental = {
+                        "type": "quilisma",
+                        "id": qId
+                    }
+                }
 
                 nc.oriscus ? ncOrnamental = {
                     "type": "oriscus",
@@ -211,7 +225,13 @@ function parseToSyllableObject(syllable, notationType) {
                     neumeComponents.push(nc_AQ);
                 } else if (notationType == "old_hispanic") {
                     // Getting the necessary attribute of NeumeComponentOH
-                    const intm = nc.$.intm;
+                    let intm = null;
+                    if (nc.$ != null){
+                        intm = nc.$.intm;
+                    }
+                    if (ncId == null){
+                        ncId = "";
+                    }
 
                     const nc_OH = new NeumeComponentOH(ncId, ncTilt, ncCurve, ncOrnamental, intm);
                     neumeComponents.push(nc_OH);

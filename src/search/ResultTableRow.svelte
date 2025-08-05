@@ -85,6 +85,46 @@
                         })
                         .join("")})`,
                 );
+            } else if (chant.notationType == "old_hispanic") {
+                customGABC.push(
+                    `${word}(${syllable.neumeComponents
+                        .map((nc) => {
+                            for (let mp of melodicPatternNc) {
+                                if (mp.includes(nc)) {
+                                    let ret = "";
+                                    if (nc.intm == null){
+                                        if (nc.ornamental != null){
+                                            if (nc.ornamental.type == "quilisma"){
+                                                ret = "q";
+                                            }
+                                            else{
+                                                ret = "n"
+                                            }
+                                        }
+                                        else{
+                                            ret = "n"
+                                        }
+                                    }
+                                    else{
+                                        ret = nc.intm;
+                                    }
+                                    return `<span class="melodic-pattern-word-gabc">${ret}</span>`;
+                                }
+                            }
+                            if (nc.intm == null){
+                                if (nc.ornamental != null){
+                                    if (nc.ornamental.type == "quilisma"){
+                                        return "q";
+                                    }
+                                }
+                                return "n";
+                            }
+                            else{
+                                return nc.intm;
+                            }
+                        })
+                        .join("")})`,
+                );
             } else if (chant.notationType == "aquitanian") {
                 if (aquitanianPitchGABC && chant.clef.shape != null) {
                     const clef = chant.clef.shape;
@@ -134,6 +174,45 @@
                                 }
                             }
                             return nc.pitch;
+                        })
+                        .join("")})`;
+            } else if (chant.notationType == "old_hispanic") {
+                customGABC[customGABC.length - 1] +=
+                    `${word}(${syllable.neumeComponents
+                        .map((nc) => {
+                            for (let mp of melodicPatternNc) {
+                                if (mp.includes(nc)) {
+                                    let ret = "";
+                                    if (nc.intm == null){
+                                        if (nc.ornamental != null){
+                                            if (nc.ornamental.type == "quilisma"){
+                                                ret = "q";
+                                            }
+                                            else{
+                                                ret = "n"
+                                            }
+                                        }
+                                        else{
+                                            ret = "n"
+                                        }
+                                    }
+                                    else{
+                                        ret = nc.intm;
+                                    }
+                                    return `<span class="melodic-pattern-word-gabc">${ret}</span>`;
+                                }
+                            }
+                            if (nc.intm == null){
+                                if (nc.ornamental != null){
+                                    if (nc.ornamental.type == "quilisma"){
+                                        return "q";
+                                    }
+                                }
+                                return "n";
+                            }
+                            else{
+                                return nc.intm;
+                            }
                         })
                         .join("")})`;
             } else if (chant.notationType == "aquitanian") {

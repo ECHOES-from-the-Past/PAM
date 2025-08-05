@@ -417,7 +417,7 @@
             </p>
             <hr />
             <Checkbox value="custom-gabc" bind:this={customGABCCheckbox}>
-                Show pitch/location with each syllable
+                Show pitch/location/contour with each syllable
             </Checkbox>
             <br />
             <Checkbox

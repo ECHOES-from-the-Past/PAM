@@ -372,7 +372,7 @@
                 </Accordion.Item>
 
                 <!-- Modern rendition -->
-                {#if otherOptions.verovioRendition.enabled}
+                {#if otherOptions.verovioRendition.enabled && chant.notationType != "old_hispanic"}
                     <Accordion.Item
                         value="modern-rendition"
                         class={accordionItem}

@@ -32,21 +32,34 @@
     modeMoreInfoLink.innerHTML = "For more information, see ";
     modeMoreInfoLink.append(modeCalcLink);
 
-    let allInfo = {
-        Title: chant.title,
-        Source: chant.source,
-        "Cantus ID": chant.cantusId,
-        "PEM Database URL": chant.pemUrls,
-        "Music Script": capitalizeFirstLetter(chant.notationType),
-        "Possible Mode(s)":
-            chant.mode.length == 0 ? "Unknown" : chant.mode.join(", "),
-        "Mode Analysis": chant.modeDescription + modeMoreInfoLink.outerHTML,
-        "MEI File": chant.fileName,
-    };
+    let allInfo = {};
+    if (chant.notationType != "old_hispanic"){
+        allInfo = {
+            Title: chant.title,
+            Source: chant.source,
+            "Cantus ID": chant.cantusId,
+            "PEM Database URL": chant.pemUrls,
+            "Music Script": capitalizeFirstLetter(chant.notationType),
+            "Possible Mode(s)":
+                chant.mode.length == 0 ? "Unknown" : chant.mode.join(", "),
+            "Mode Analysis": chant.modeDescription + modeMoreInfoLink.outerHTML,
+            "MEI File": chant.fileName,
+        };
+    }
+    else{
+        allInfo = {
+            Title: chant.title,
+            Source: chant.source,
+            "Cantus ID": chant.cantusId,
+            "PEM Database URL": chant.pemUrls,
+            "Music Script": capitalizeFirstLetter(chant.notationType),
+            "MEI File": chant.fileName,
+        };
+    }
 
     onMount(() => {
         for (let info in allInfo) {
-            if (info == "Mode Analysis" && chant.notationType == 'square') {
+            if (info == "Mode Analysis" && (chant.notationType == 'square' || chant.notationType == 'old_hispanic')) {
                 continue;
             }
             
@@ -79,7 +92,7 @@
                 a.innerText = `${fileName.split("/").pop()} (GitHub)`; // showing the file name only
                 p.appendChild(a);
             } else if (
-                chant.notationType == "square" &&
+                (chant.notationType == "square" || chant.notationType == "old_hispanic") &&
                 info == "Possible Mode(s)"
             ) {
                 // Remove mode suggestion for square notation

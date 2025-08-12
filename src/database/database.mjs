@@ -759,10 +759,8 @@ const octokit = new Octokit({
     // auth: 'YOUR-TOKEN'
 })
 
-//const OWNER = 'ECHOES-from-the-Past'
-//const REPO = 'GABCtoMEI'
-const OWNER = 'DeannaLC'
-const REPO = 'MEI-Samples'
+const OWNER = 'ECHOES-from-the-Past'
+const REPO = 'GABCtoMEI'
 
 // Retrieve the directory tree
 let data = await octokit.request(`GET /repos/${OWNER}/${REPO}/git/trees/main`, {

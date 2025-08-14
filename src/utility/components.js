@@ -67,12 +67,7 @@ export class NeumeComponentOH extends NeumeComponent {
    */
   constructor(id, tilt, curve, ornamental, intm) {
     super(id, tilt, curve, ornamental);
-    if (intm != null){
-      this.intm = String(intm);
-    }
-    else{
-      this.intm = null;
-    }
+    this.intm = intm;
   }
 }
 

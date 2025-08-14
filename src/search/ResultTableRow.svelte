@@ -4,7 +4,7 @@
     import Button from "@components/Button.svelte";
 
     import { Chant } from "@utility/components";
-    import { capitalizeFirstLetter } from "@utility/utils";
+    import { notationTypeToString } from "@utility/utils";
     import { Accordion } from "bits-ui";
     import AnalysisChart from "./AnalysisChart.svelte";
     import { fly, slide, fade, draw, scale } from "svelte/transition";
@@ -92,21 +92,12 @@
                             for (let mp of melodicPatternNc) {
                                 if (mp.includes(nc)) {
                                     let ret = "";
-                                    if (nc.intm == null){
-                                        if (nc.ornamental != null){
-                                            if (nc.ornamental.type == "quilisma"){
-                                                ret = "q";
-                                            }
-                                            else{
-                                                ret = "n"
-                                            }
-                                        }
-                                        else{
-                                            ret = "n"
-                                        }
-                                    }
-                                    else{
+                                    if (nc.intm != null) {
                                         ret = nc.intm;
+                                    } else if (nc.ornamental?.type === "quilisma") {
+                                        ret = "q";
+                                    } else {
+                                        ret = "n";
                                     }
                                     return `<span class="melodic-pattern-word-gabc">${ret}</span>`;
                                 }
@@ -183,21 +174,12 @@
                             for (let mp of melodicPatternNc) {
                                 if (mp.includes(nc)) {
                                     let ret = "";
-                                    if (nc.intm == null){
-                                        if (nc.ornamental != null){
-                                            if (nc.ornamental.type == "quilisma"){
-                                                ret = "q";
-                                            }
-                                            else{
-                                                ret = "n"
-                                            }
-                                        }
-                                        else{
-                                            ret = "n"
-                                        }
-                                    }
-                                    else{
+                                    if (nc.intm != null) {
                                         ret = nc.intm;
+                                    } else if (nc.ornamental?.type === "quilisma") {
+                                        ret = "q";
+                                    } else {
+                                        ret = "n";
                                     }
                                     return `<span class="melodic-pattern-word-gabc">${ret}</span>`;
                                 }
@@ -286,7 +268,7 @@
     </td>
     <!-- Music Script column -->
     <td>
-        {capitalizeFirstLetter(chant.notationType)}
+        {notationTypeToString(chant.notationType)}
     </td>
     <!-- Text column -->
     <td>

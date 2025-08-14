@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { capitalizeFirstLetter } from "@utility/utils";
+    import { notationTypeToString } from "@utility/utils";
     import { Chant } from "@utility/components";
 
     /**
@@ -32,30 +32,17 @@
     modeMoreInfoLink.innerHTML = "For more information, see ";
     modeMoreInfoLink.append(modeCalcLink);
 
-    let allInfo = {};
-    if (chant.notationType != "old_hispanic"){
-        allInfo = {
-            Title: chant.title,
-            Source: chant.source,
-            "Cantus ID": chant.cantusId,
-            "PEM Database URL": chant.pemUrls,
-            "Music Script": capitalizeFirstLetter(chant.notationType),
-            "Possible Mode(s)":
-                chant.mode.length == 0 ? "Unknown" : chant.mode.join(", "),
-            "Mode Analysis": chant.modeDescription + modeMoreInfoLink.outerHTML,
-            "MEI File": chant.fileName,
-        };
-    }
-    else{
-        allInfo = {
-            Title: chant.title,
-            Source: chant.source,
-            "Cantus ID": chant.cantusId,
-            "PEM Database URL": chant.pemUrls,
-            "Music Script": capitalizeFirstLetter(chant.notationType),
-            "MEI File": chant.fileName,
-        };
-    }
+    let allInfo = {
+        Title: chant.title,
+        Source: chant.source,
+        "Cantus ID": chant.cantusId,
+        "PEM Database URL": chant.pemUrls,
+        "Music Script": notationTypeToString(chant.notationType),
+        "Possible Mode(s)":
+            chant.mode != null ? chant.mode.length == 0 ? "Unknown" : chant.mode.join(", ") : null,
+        "Mode Analysis": chant.modeDescription != null ? chant.modeDescription + modeMoreInfoLink.outerHTML : null,
+        "MEI File": chant.fileName,
+    };
 
     onMount(() => {
         for (let info in allInfo) {
@@ -95,7 +82,7 @@
                 (chant.notationType == "square" || chant.notationType == "old_hispanic") &&
                 info == "Possible Mode(s)"
             ) {
-                // Remove mode suggestion for square notation
+                // Remove mode suggestion for square and Old Hispanic notation
                 continue;
             } else {
                 // Default rendering

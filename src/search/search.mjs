@@ -100,20 +100,11 @@ function matchChantWithContour(chant, contourArray) {
         //Since Old Hispanic only uses current note (not prev and current), uses a separate if case
         if (chantNotationType == "old_hispanic"){
             for (let i_search = 0; i_search < contourArray.length; i_search++){
-                //first case for quilisma - check if an ornamental exists, then check if it's a quilisma
-                if (contourArray[i_search] == "q" && ncArray[i_nc + i_search].ornamental != null){
-                    if (ncArray[i_nc + i_search].ornamental.type == "quilisma"){
-                        patternFound.push(ncArray[i_nc + i_search]);
-                    }
-                    else{
-                        patternFound = [];
-                        break;
-                    }
-                }
-                //use intm to check whether it matches current contour
-                else if ((contourArray[i_search] == "u" && ncArray[i_nc + i_search].intm == "u")
+                //processing the search for Old Hispanic notation, using the `intm` and `ornamental` attributes
+                if ((contourArray[i_search] == "q" && ncArray[i_nc + i_search].ornamental?.type == "quilisma")
+                     || (contourArray[i_search] == "u" && ncArray[i_nc + i_search].intm == "u")
                      || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == "n")
-                     || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == null)
+                     || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == null && ncArray[i_nc + i_search].ornamental?.type != "quilisma")
                      || (contourArray[i_search] == "d" && ncArray[i_nc + i_search].intm == "d")
                      || (contourArray[i_search] == "s" && ncArray[i_nc + i_search].intm == "s")
                 ) {

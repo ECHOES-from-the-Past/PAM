@@ -28,6 +28,27 @@ export function capitalizeFirstLetter(str) {
 }
 
 /**
+ * @param {string} str the string to have the first letter of each word capitalized
+ * @returns the string with the first letter of each word capitalized/to uppercase
+ */
+export function notationTypeToString(str){
+  str = str.replace("_", " ");
+  let split = str.split(" ");
+  if (split.length == 1){
+    return capitalizeFirstLetter(str);
+  }
+  let ret = "";
+  for (let i = 0; i < split.length; i++){
+    if (i != 0){
+      ret += " ";
+    }
+    ret += capitalizeFirstLetter(split[i]);
+  }
+  return ret;
+
+}
+
+/**
  * Load MEI file from its file path
  * @param {string} fileName link to the MEI (.mei) file to be rendered
  * @returns the content of the MEI file

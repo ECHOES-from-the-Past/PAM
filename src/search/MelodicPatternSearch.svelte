@@ -368,7 +368,7 @@
                                     <code>s</code> for the same note (unison)
                                 </li>
                                 <li>
-                                    <code>n</code> (only in Old Hispanic) unknown/missing interval e.g. first note of a neume
+                                    <code>n</code> (only in Old Hispanic) unknown/missing interval, e.g., first note of a neume
                                 </li>
                                 <li>
                                     <code>q</code> (only in Old Hispanic) check if note is a quilisma

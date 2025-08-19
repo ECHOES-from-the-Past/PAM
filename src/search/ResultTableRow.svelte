@@ -4,7 +4,7 @@
     import Button from "@components/Button.svelte";
 
     import { Chant } from "@utility/components";
-    import { capitalizeFirstLetter } from "@utility/utils";
+    import { notationTypeToString } from "@utility/utils";
     import { Accordion } from "bits-ui";
     import AnalysisChart from "./AnalysisChart.svelte";
     import { fly, slide, fade, draw, scale } from "svelte/transition";
@@ -85,6 +85,37 @@
                         })
                         .join("")})`,
                 );
+            } else if (chant.notationType == "old_hispanic") {
+                customGABC.push(
+                    `${word}(${syllable.neumeComponents
+                        .map((nc) => {
+                            for (let mp of melodicPatternNc) {
+                                if (mp.includes(nc)) {
+                                    let ret = "";
+                                    if (nc.intm != null) {
+                                        ret = nc.intm;
+                                    } else if (nc.ornamental?.type === "quilisma") {
+                                        ret = "q";
+                                    } else {
+                                        ret = "n";
+                                    }
+                                    return `<span class="melodic-pattern-word-gabc">${ret}</span>`;
+                                }
+                            }
+                            if (nc.intm == null){
+                                if (nc.ornamental != null){
+                                    if (nc.ornamental.type == "quilisma"){
+                                        return "q";
+                                    }
+                                }
+                                return "n";
+                            }
+                            else{
+                                return nc.intm;
+                            }
+                        })
+                        .join("")})`,
+                );
             } else if (chant.notationType == "aquitanian") {
                 if (aquitanianPitchGABC && chant.clef.shape != null) {
                     const clef = chant.clef.shape;
@@ -134,6 +165,36 @@
                                 }
                             }
                             return nc.pitch;
+                        })
+                        .join("")})`;
+            } else if (chant.notationType == "old_hispanic") {
+                customGABC[customGABC.length - 1] +=
+                    `${word}(${syllable.neumeComponents
+                        .map((nc) => {
+                            for (let mp of melodicPatternNc) {
+                                if (mp.includes(nc)) {
+                                    let ret = "";
+                                    if (nc.intm != null) {
+                                        ret = nc.intm;
+                                    } else if (nc.ornamental?.type === "quilisma") {
+                                        ret = "q";
+                                    } else {
+                                        ret = "n";
+                                    }
+                                    return `<span class="melodic-pattern-word-gabc">${ret}</span>`;
+                                }
+                            }
+                            if (nc.intm == null){
+                                if (nc.ornamental != null){
+                                    if (nc.ornamental.type == "quilisma"){
+                                        return "q";
+                                    }
+                                }
+                                return "n";
+                            }
+                            else{
+                                return nc.intm;
+                            }
                         })
                         .join("")})`;
             } else if (chant.notationType == "aquitanian") {
@@ -207,7 +268,7 @@
     </td>
     <!-- Music Script column -->
     <td>
-        {capitalizeFirstLetter(chant.notationType)}
+        {notationTypeToString(chant.notationType)}
     </td>
     <!-- Text column -->
     <td>
@@ -272,7 +333,7 @@
                     </Accordion.Content>
                 </Accordion.Item>
 
-                <!-- Neume Distribution Chart -->
+                <!-- Melodic Height Distribution Chart for Aquitanian and Square, Neume Distribution Chart for Old Hispanic -->
                 <Accordion.Item
                     value="neume-distribution-chart"
                     class={accordionItem}
@@ -281,7 +342,11 @@
                         <!-- Title & dropdown button -->
                         <Accordion.Trigger class={accordionTrigger}>
                             <span class="accordion-header">
-                                Neume Distribution Chart
+                                {#if chant.notationType == "old_hispanic"}
+                                    Neume Distribution Chart
+                                {:else}
+                                    Melodic Height Distribution Chart
+                                {/if}
                             </span>
                         </Accordion.Trigger>
                     </Accordion.Header>
@@ -293,7 +358,7 @@
                 </Accordion.Item>
 
                 <!-- Modern rendition -->
-                {#if otherOptions.verovioRendition.enabled}
+                {#if otherOptions.verovioRendition.enabled && chant.notationType != "old_hispanic"}
                     <Accordion.Item
                         value="modern-rendition"
                         class={accordionItem}

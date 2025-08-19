@@ -54,6 +54,23 @@ export class NeumeComponentAQ extends NeumeComponent {
   }
 }
 
+/**
+ * The Neume Component class for Old Hispanic notation.
+ */
+export class NeumeComponentOH extends NeumeComponent {
+  /**
+   * Constructor of a Neume Component for Aquitanian notation.
+   * @param {String} id (required) the `@xml:id` attribute of the neume component 
+   * @param {*} tilt (optional) the tilt direction of the neume component (e.g., "s", "ne")
+   * @param {*} ornamental (optional) the ornamental shape of the component
+   * @param {String} intm (optional) interval of the current neume component relative to the previous ("n", "u", "d", "s")
+   */
+  constructor(id, tilt, curve, ornamental, intm) {
+    super(id, tilt, curve, ornamental);
+    this.intm = intm;
+  }
+}
+
 
 export class SyllableWord {
   /**

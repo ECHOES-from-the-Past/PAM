@@ -13,6 +13,9 @@ export function filterByMusicScript(chantList, musicScripts) {
         } else if (musicScripts.square && chant.notationType == "square") {
             return true;
         }
+        else if (musicScripts.old_hispanic && chant.notationType == "old_hispanic") {
+            return true;
+        }
         return false;
     });
 
@@ -91,39 +94,65 @@ function matchChantWithContour(chant, contourArray) {
     let patterns = [];
 
     for (let i_nc = 0; i_nc < ncArray.length - contourArray.length; i_nc++) {
-        let patternFound = [];
-        patternFound.push(ncArray[i_nc]);
 
-        if (chantNotationType == "aquitanian") {
-            for (let i_sq = 0; i_sq < contourArray.length; i_sq++) {
-                // processing the search for Aquitanian notation, using the `loc` attribute
-                if (ncArray[i_nc + i_sq].loc + contourArray[i_sq] == ncArray[i_nc + i_sq + 1].loc
-                    || (contourArray[i_sq] == "u" && ncArray[i_nc + i_sq + 1].loc > ncArray[i_nc + i_sq].loc)
-                    || (contourArray[i_sq] == "d" && ncArray[i_nc + i_sq + 1].loc < ncArray[i_nc + i_sq].loc)
-                    || (contourArray[i_sq] == "s" && ncArray[i_nc + i_sq + 1].loc == ncArray[i_nc + i_sq].loc)
+        let patternFound = [];
+
+        //Since Old Hispanic only uses current note (not prev and current), uses a separate if case
+        if (chantNotationType == "old_hispanic"){
+            for (let i_search = 0; i_search < contourArray.length; i_search++){
+                //processing the search for Old Hispanic notation, using the `intm` and `ornamental` attributes
+                if ((contourArray[i_search] == "q" && ncArray[i_nc + i_search].ornamental?.type == "quilisma")
+                     || (contourArray[i_search] == "u" && ncArray[i_nc + i_search].intm == "u")
+                     || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == "n")
+                     || (contourArray[i_search] == "n" && ncArray[i_nc + i_search].intm == null && ncArray[i_nc + i_search].ornamental?.type != "quilisma")
+                     || (contourArray[i_search] == "d" && ncArray[i_nc + i_search].intm == "d")
+                     || (contourArray[i_search] == "s" && ncArray[i_nc + i_search].intm == "s")
                 ) {
-                    patternFound.push(ncArray[i_nc + i_sq + 1]);
-                } else {
+                    patternFound.push(ncArray[i_nc + i_search]);
+                }
+                else {
                     patternFound = [];
                     break;
                 }
             }
         }
-        else if (chantNotationType == "square") {
-            for (let i_search = 0; i_search < contourArray.length; i_search++) {
-                // processing the search for Square notation, using the `septenary` value of the note
-                if (toSeptenary(ncArray[i_nc + i_search]) + contourArray[i_search] == toSeptenary(ncArray[i_nc + i_search + 1])
-                    || (contourArray[i_search] == "u" && toSeptenary(ncArray[i_nc + i_search + 1]) > toSeptenary(ncArray[i_nc + i_search]))
-                    || (contourArray[i_search] == "d" && toSeptenary(ncArray[i_nc + i_search + 1]) < toSeptenary(ncArray[i_nc + i_search]))
-                    || (contourArray[i_search] == "s" && toSeptenary(ncArray[i_nc + i_search + 1]) == toSeptenary(ncArray[i_nc + i_search]))
-                ) {
-                    patternFound.push(ncArray[i_nc + i_search + 1]);
-                } else {
-                    patternFound = [];
-                    break;
+
+        //Aquitanian and Square cases
+        else{
+            patternFound.push(ncArray[i_nc]);
+
+            if (chantNotationType == "aquitanian") {
+                for (let i_sq = 0; i_sq < contourArray.length; i_sq++) {
+                    // processing the search for Aquitanian notation, using the `loc` attribute
+                    if (ncArray[i_nc + i_sq].loc + contourArray[i_sq] == ncArray[i_nc + i_sq + 1].loc
+                        || (contourArray[i_sq] == "u" && ncArray[i_nc + i_sq + 1].loc > ncArray[i_nc + i_sq].loc)
+                        || (contourArray[i_sq] == "d" && ncArray[i_nc + i_sq + 1].loc < ncArray[i_nc + i_sq].loc)
+                        || (contourArray[i_sq] == "s" && ncArray[i_nc + i_sq + 1].loc == ncArray[i_nc + i_sq].loc)
+                    ) {
+                        patternFound.push(ncArray[i_nc + i_sq + 1]);
+                    } else {
+                        patternFound = [];
+                        break;
+                    }
+                }
+            }
+            else if (chantNotationType == "square") {
+                for (let i_search = 0; i_search < contourArray.length; i_search++) {
+                    // processing the search for Square notation, using the `septenary` value of the note
+                    if (toSeptenary(ncArray[i_nc + i_search]) + contourArray[i_search] == toSeptenary(ncArray[i_nc + i_search + 1])
+                        || (contourArray[i_search] == "u" && toSeptenary(ncArray[i_nc + i_search + 1]) > toSeptenary(ncArray[i_nc + i_search]))
+                        || (contourArray[i_search] == "d" && toSeptenary(ncArray[i_nc + i_search + 1]) < toSeptenary(ncArray[i_nc + i_search]))
+                        || (contourArray[i_search] == "s" && toSeptenary(ncArray[i_nc + i_search + 1]) == toSeptenary(ncArray[i_nc + i_search]))
+                    ) {
+                        patternFound.push(ncArray[i_nc + i_search + 1]);
+                    } else {
+                        patternFound = [];
+                        break;
+                    }
                 }
             }
         }
+
         if (patternFound.length > 0) {
             patterns.push(patternFound);
         }

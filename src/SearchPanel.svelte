@@ -36,6 +36,7 @@
 
     let /** @type {Checkbox} */ aquitanianCheckbox = $state(),
         /** @type {Checkbox} */ squareCheckbox = $state(),
+        /** @type {Checkbox} */ ohCheckbox = $state(),
         /** @type {Checkbox} */ liquescentCheckbox = $state(),
         /** @type {Checkbox} */ quilismaCheckbox = $state(),
         /** @type {Checkbox} */ oriscusCheckbox = $state();
@@ -90,6 +91,7 @@
         resultListOfChants = filterByMusicScript(resultListOfChants, {
             aquitanian: aquitanianCheckbox.isChecked(),
             square: squareCheckbox.isChecked(),
+            old_hispanic: ohCheckbox.isChecked(),
         });
 
         /* Second layer of filtering: Ornamental shapes */
@@ -198,7 +200,7 @@
     }
 
     export function loadDefaultOptions() {
-        [aquitanianCheckbox, squareCheckbox].forEach((e) => e.setChecked());
+        [aquitanianCheckbox, squareCheckbox, ohCheckbox].forEach((e) => e.setChecked());
         [liquescentCheckbox, quilismaCheckbox, oriscusCheckbox].forEach((e) =>
             e.setUnchecked(),
         );
@@ -234,6 +236,8 @@
                 >Aquitanian</Checkbox
             >
             <Checkbox value="square" bind:this={squareCheckbox}>Square</Checkbox
+            >
+            <Checkbox value="old_hispanic" bind:this={ohCheckbox}>Old Hispanic</Checkbox
             >
             <hr />
 
@@ -413,7 +417,7 @@
             </p>
             <hr />
             <Checkbox value="custom-gabc" bind:this={customGABCCheckbox}>
-                Show pitch/location with each syllable
+                Show pitch/location/contour with each syllable
             </Checkbox>
             <br />
             <Checkbox

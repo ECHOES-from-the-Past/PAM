@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { capitalizeFirstLetter } from "@utility/utils";
+    import { notationTypeToString } from "@utility/utils";
     import { Chant } from "@utility/components";
 
     /**
@@ -37,16 +37,16 @@
         Source: chant.source,
         "Cantus ID": chant.cantusId,
         "PEM Database URL": chant.pemUrls,
-        "Music Script": capitalizeFirstLetter(chant.notationType),
+        "Music Script": notationTypeToString(chant.notationType),
         "Possible Mode(s)":
-            chant.mode.length == 0 ? "Unknown" : chant.mode.join(", "),
-        "Mode Analysis": chant.modeDescription + modeMoreInfoLink.outerHTML,
+            chant.mode != null ? chant.mode.length == 0 ? "Unknown" : chant.mode.join(", ") : null,
+        "Mode Analysis": chant.modeDescription != null ? chant.modeDescription + modeMoreInfoLink.outerHTML : null,
         "MEI File": chant.fileName,
     };
 
     onMount(() => {
         for (let info in allInfo) {
-            if (info == "Mode Analysis" && chant.notationType == 'square') {
+            if (info == "Mode Analysis" && (chant.notationType == 'square' || chant.notationType == 'old_hispanic')) {
                 continue;
             }
             
@@ -79,10 +79,10 @@
                 a.innerText = `${fileName.split("/").pop()} (GitHub)`; // showing the file name only
                 p.appendChild(a);
             } else if (
-                chant.notationType == "square" &&
+                (chant.notationType == "square" || chant.notationType == "old_hispanic") &&
                 info == "Possible Mode(s)"
             ) {
-                // Remove mode suggestion for square notation
+                // Remove mode suggestion for square and Old Hispanic notation
                 continue;
             } else {
                 // Default rendering

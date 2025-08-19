@@ -333,7 +333,7 @@
                     </Accordion.Content>
                 </Accordion.Item>
 
-                <!-- Neume Distribution Chart -->
+                <!-- Melodic Height Distribution Chart for Aquitanian and Square, Neume Distribution Chart for Old Hispanic -->
                 <Accordion.Item
                     value="neume-distribution-chart"
                     class={accordionItem}
@@ -342,7 +342,12 @@
                         <!-- Title & dropdown button -->
                         <Accordion.Trigger class={accordionTrigger}>
                             <span class="accordion-header">
-                                Neume Distribution Chart
+                                {#if chant.notationType == "old_hispanic"}
+                                    Neume Distribution Chart
+                                {/if}
+                                {#if chant.notationType != "old_hispanic"}
+                                    Melodic Height Distribution Chart
+                                {/if}
                             </span>
                         </Accordion.Trigger>
                     </Accordion.Header>

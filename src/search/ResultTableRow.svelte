@@ -344,8 +344,7 @@
                             <span class="accordion-header">
                                 {#if chant.notationType == "old_hispanic"}
                                     Neume Distribution Chart
-                                {/if}
-                                {#if chant.notationType != "old_hispanic"}
+                                {:else}
                                     Melodic Height Distribution Chart
                                 {/if}
                             </span>

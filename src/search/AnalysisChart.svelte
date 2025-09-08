@@ -198,6 +198,58 @@
         return chantData;
     }
 
+    /**
+     * Take the Old Hispanic syllable list, output usable chant data for the chart
+     *
+     * @param {Syllable[]} chantSyls
+     */
+    function getChantDataOldHispanic(chantSyls){
+        let chantData = {
+            labels: [],
+            datasets: [
+                {
+                    label: "Number of notes",
+                    data: [],
+                    backgroundColor: [],
+                    borderColor: [],
+                    borderWidth: 1,
+                },
+            ],
+        };
+
+        let empty = "\u200b";
+        let seenAmts = {};
+        let data = {}
+
+        for (let i = 0; i < chantSyls.length; i++){
+            let curSyl = chantSyls[i];
+            let curWord = curSyl.syllableWord.text;
+            //Mark syllable words that haven't been seen
+            if (seenAmts[curWord] == undefined){
+                seenAmts[curWord] = 1;
+            }
+            //If there's a duplicate, add invisible character(s) to prevent overwriting
+            else{
+                seenAmts[curWord] += 1;
+                for (let j = 1; j < seenAmts[curWord]; j++){
+                    curWord += empty;
+                }
+            }
+            //Add syllable word and # of NCs to data
+            data[curWord] = curSyl.neumeComponents.length;
+        }
+        for (let key in data) {
+            //console.log(key)
+            //console.log(data[key]);
+            chantData.datasets[0].data.push(data[key]);
+            chantData.labels.push(key);
+            chantData.datasets[0].backgroundColor.push(normalBg);
+            chantData.datasets[0].borderColor.push(normalBorder);
+        }
+
+        return chantData;
+    }
+
     // Basically the main function of the analysis chart
     onMount(() => {
         let notes = getNeumeComponentList(chant.syllables);
@@ -207,6 +259,9 @@
             chantData = getChantDataAquitanian(notes);
         } else if (chant.notationType == "square") {
             chantData = getChantDataSquare(notes);
+        }
+        if (chant.notationType == "old_hispanic"){
+            chantData = getChantDataOldHispanic(chant.syllables);
         }
 
         new Chart(chart, {

@@ -217,34 +217,22 @@
             ],
         };
 
-        let empty = "\u200b";
-        let seenAmts = {};
-        let data = {}
-
+        let last = "";
         for (let i = 0; i < chantSyls.length; i++){
-            let curSyl = chantSyls[i];
-            let curWord = curSyl.syllableWord.text;
-            //Mark syllable words that haven't been seen
-            if (seenAmts[curWord] == undefined){
-                seenAmts[curWord] = 1;
-            }
-            //If there's a duplicate, add invisible character(s) to prevent overwriting
-            else{
-                seenAmts[curWord] += 1;
-                for (let j = 1; j < seenAmts[curWord]; j++){
-                    curWord += empty;
+            if (i != 0){
+                if (last.syllableWord.position == "t" || last.syllableWord.position == "s"){
+                    chantData.labels.push(" ");
+                    chantData.datasets[0].data.push(0);
+                    chantData.datasets[0].backgroundColor.push(normalBg);
+                    chantData.datasets[0].borderColor.push(normalBorder);
                 }
             }
-            //Add syllable word and # of NCs to data
-            data[curWord] = curSyl.neumeComponents.length;
-        }
-        for (let key in data) {
-            //console.log(key)
-            //console.log(data[key]);
-            chantData.datasets[0].data.push(data[key]);
-            chantData.labels.push(key);
+            let curSyl = chantSyls[i];
+            chantData.labels.push(curSyl.syllableWord.text);
+            chantData.datasets[0].data.push(curSyl.neumeComponents.length);
             chantData.datasets[0].backgroundColor.push(normalBg);
             chantData.datasets[0].borderColor.push(normalBorder);
+            last = curSyl;
         }
 
         return chantData;
@@ -255,6 +243,21 @@
         let notes = getNeumeComponentList(chant.syllables);
         let chantData;
 
+        //Use separate values for Square + Aquitanian than Old Hispanic
+        let titleText = `Frequency of the notes across the chant ambitus`;
+        let xText = "Ambitus";
+        let yText = "Frequency";
+        let xTick = 14;
+        let showLabel = true;
+        let chartLegend = {
+            labels: {
+                display: true,
+                font: {
+                    size: 14,
+                },
+            },
+        }
+
         if (chant.notationType == "aquitanian") {
             chantData = getChantDataAquitanian(notes);
         } else if (chant.notationType == "square") {
@@ -262,6 +265,12 @@
         }
         if (chant.notationType == "old_hispanic"){
             chantData = getChantDataOldHispanic(chant.syllables);
+            xTick = 10;
+            xText = "Text";
+            yText = "Number of Nume Components";
+            titleText = "Number of Neume Components Across Chant";
+            showLabel = false;
+            chartLegend = false;
         }
 
         new Chart(chart, {
@@ -271,20 +280,13 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: `Frequency of the notes across the chant ambitus`,
+                        text: titleText,
                         font: {
                             size: 18,
                             weight: "bold",
                         },
                     },
-                    legend: {
-                        labels: {
-                            display: true,
-                            font: {
-                                size: 14,
-                            },
-                        },
-                    },
+                    legend: chartLegend,
                 },
                 scales: {
                     x: {
@@ -292,7 +294,7 @@
                         title: {
                             display: true,
                             padding: 1,
-                            text: "Ambitus",
+                            text: xText,
                             font: {
                                 size: 16,
                                 weight: "bold",
@@ -300,7 +302,7 @@
                         },
                         ticks: {
                             font: {
-                                size: 14,
+                                size: xTick,
                             },
                         },
                     },
@@ -308,7 +310,7 @@
                         stacked: true,
                         title: {
                             display: true,
-                            text: "Frequency",
+                            text: yText,
                             font: {
                                 size: 16,
                                 weight: "bold",

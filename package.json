@@ -1,6 +1,6 @@
 {
   "name": "plainchant-analyser-mei",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "The Plainchant Analyser tool for MEI Neumes ~ A prototyping tool for searching and analysing plainchant, part of project Echoes from The Past.",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",

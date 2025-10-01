@@ -23,6 +23,9 @@
 
     // The place for the chart
     let chart = $state();
+    // canvas dimensions so we can make it scroll horizontally when wide
+    let canvasWidth = 704;
+    let canvasHeight = 400;
 
     // Colours
     const normalBg = "#10b98180",
@@ -265,18 +268,31 @@
         }
         if (chant.notationType == "old_hispanic"){
             chantData = getChantDataOldHispanic(chant.syllables);
-            xTick = 10;
+            xTick = 12;
             xText = "Text";
-            yText = "Number of Nume Components";
+            yText = "Number of Neume Components";
             titleText = "Number of Neume Components Across Chant";
             showLabel = false;
             chartLegend = false;
+            // Make canvas wider if needed
+            canvasWidth = Math.max(704, chantData.labels.length * 30 + 300);
         }
 
+        // update the actual canvas element size so Chart.js uses it
+        if (chart) {
+            // set both attributes and style to ensure correct rendering and scroll behavior
+            chart.width = canvasWidth;
+            chart.height = canvasHeight;
+            chart.style.width = `${canvasWidth}px`;
+            chart.style.height = `${canvasHeight}px`;
+        }
+
+        // force Chart.js to use the canvas pixel size instead of resizing to container
         new Chart(chart, {
             type: "bar",
             data: chantData,
             options: {
+                responsive: false,
                 plugins: {
                     title: {
                         display: true,
@@ -328,8 +344,17 @@
     });
 </script>
 
+{#if chant.notationType == "old_hispanic"}
+<div
+    class="items-center justify-center border-2 rounded-lg border-gray-300 mx-auto mt-4"
+    style="width: 688px; max-width: 100%; height: {canvasHeight}px; overflow-x: auto; overflow-y: hidden;"
+>
+    <canvas bind:this={chart} class="m-4" style="min-width: {canvasWidth}px; height: {canvasHeight}px; display: block;"> </canvas>
+</div>
+{:else}
 <div
     class="flex items-center justify-center w-full lg:w-4/5 border-2 rounded-lg border-gray-300 mx-auto mt-4"
 >
     <canvas bind:this={chart} class="m-4"> </canvas>
 </div>
+{/if}

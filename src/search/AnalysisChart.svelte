@@ -11,6 +11,7 @@
   } from "@utility/components";
   import { Chart } from "chart.js/auto";
   import { onMount } from "svelte";
+  import { draw, generate } from "patternomaly";
 
   /**
    * @typedef {Object} Props
@@ -28,8 +29,8 @@
   const COLORS = {
     normalBg: "#10b98180",
     normalBorder: "#047857aa",
-    rhombusBg: "#67e8f980",
-    rhombusBorder: "#06b6d4aa",
+    rhombusBg: "#3c74f9aa",
+    rhombusBorder: "#1310f9aa",
   };
 
   /**
@@ -86,7 +87,7 @@
       {
         label: "Rhombus",
         data: sortedKeys.map((key) => rhombus[key]),
-        backgroundColor: new Array(sortedKeys.length).fill(COLORS.rhombusBg),
+        backgroundColor: new Array(sortedKeys.length).fill(draw('diamond', COLORS.rhombusBg)),
         borderColor: new Array(sortedKeys.length).fill(COLORS.rhombusBorder),
         borderWidth: 1,
       },
@@ -153,7 +154,8 @@
    */
   function getChantDataOldHispanic(chantSyls) {
     const labels = [];
-    const data = [];
+    const ncData = [];
+    const ncData20 = [];
 
     for (let i = 0; i < chantSyls.length; i++) {
       const curSyl = chantSyls[i];
@@ -164,22 +166,38 @@
         const position = prevSyl.syllableWord.position;
         if (position === "t" || position === "s") {
           labels.push(" ");
-          data.push(0);
+          ncData.push(0);
+          ncData20.push(0);
         }
       }
 
+      const ncLen = curSyl.neumeComponents.length;
       labels.push(curSyl.syllableWord.text);
-      data.push(curSyl.neumeComponents.length);
+      if (ncLen >= 20){
+        ncData20.push(ncLen);
+        ncData.push(0);
+      }
+      else{
+        ncData.push(ncLen);
+        ncData20.push(0);
+      }
     }
 
     return {
       labels,
       datasets: [
         {
-          label: "Number of notes",
-          data,
-          backgroundColor: new Array(labels.length).fill(COLORS.normalBg),
-          borderColor: new Array(labels.length).fill(COLORS.normalBorder),
+          label: "Number of NCs",
+          data: ncData,
+          backgroundColor: new Array(ncData.length).fill(COLORS.normalBg),
+          borderColor: new Array(ncData.length).fill(COLORS.normalBorder),
+          borderWidth: 1,
+        },
+        {
+          label: "Number of NCs (20+)",
+          data: ncData20,
+          backgroundColor: new Array(ncData20.length).fill(draw('disc', COLORS.rhombusBg)),
+          borderColor: new Array(ncData20.length).fill(COLORS.rhombusBorder),
           borderWidth: 1,
         },
       ],
@@ -198,8 +216,6 @@
         titleText: "Number of Neume Components Across Chant",
         xText: "Text",
         yText: "Number of Neume Components",
-        xTick: 12,
-        chartLegend: false,
       };
     } else {
       const notes = getNeumeComponentList(chant.syllables);
@@ -212,13 +228,6 @@
         titleText: "Frequency of the notes across the chant ambitus",
         xText: "Ambitus",
         yText: "Frequency",
-        xTick: 14,
-        chartLegend: {
-          labels: {
-            display: true,
-            font: { size: 14 },
-          },
-        },
       };
     }
 
@@ -250,14 +259,16 @@
             },
             padding: 14,
           },
-          legend: config.chartLegend ? {
-            ...config.chartLegend,
+          legend: {
             labels: {
-              ...config.chartLegend.labels,
-              font: { size: 15, weight: "bold" },
+              display: true,
+              font: { 
+                size: 15,
+                weight: "bold" 
+              },
               padding: 8,
             },
-          } : config.chartLegend,
+          }
         },
         scales: {
           x: {
@@ -279,6 +290,8 @@
             },
           },
           y: {
+            min: 0,
+            max: 20,
             stacked: true,
             title: {
               display: true,
@@ -290,6 +303,13 @@
               padding: 2,
             },
             ticks: {
+              //Chart cuts off at max of 20, so use 20+ for clarity when there's more than 20 NCs
+              callback: function(val, index) {
+                if (val == 20){
+                  return "20+"
+                }
+                return val;
+              },
               font: {
                 size: 13,
               },

@@ -1,4 +1,4 @@
-<a href="/src/components/Test_PDF.pdf" target="_blank" download>For Musicologists</a>
+<a href="https://github.com/ECHOES-from-the-Past/PAM/blob/main/public/Test_PDF.pdf" target=_blank>For Musicologists</a>
 
 <style lang="postcss">
     /* Default button styles */

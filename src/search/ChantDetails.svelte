@@ -68,13 +68,22 @@
                 }
             } else if (info == "MEI File") {  // Links to the GitHub MEI files
                 p.innerHTML = `<b>${info}</b>: `;
-                const rootGABCtoMEI =
-                    "https://github.com/ECHOES-from-the-Past/GABCtoMEI/blob/main/";
+                const rootPamMeiDatabase =
+                    "https://github.com/ECHOES-from-the-Past/PAM-MEI-Database/blob/main/";
 
                 let fileName = chant.fileName;
                 let a = document.createElement("a");
-
-                a.href = rootGABCtoMEI + fileName;
+                let chantLink;
+                if (chant.notationType == "square"){
+                    chantLink = "Square_MEIs/";
+                }
+                else if (chant.notationType == "aquitanian"){
+                    chantLink = "Aquitanian_MEIs/";
+                }
+                else if (chant.notationType == "old_hispanic"){
+                    chantLink = "Old_Hispanic_MEIs/";
+                }
+                a.href = rootPamMeiDatabase + chantLink + fileName;
                 a.target = "_blank";
                 a.innerText = `${fileName.split("/").pop()} (GitHub)`; // showing the file name only
                 p.appendChild(a);

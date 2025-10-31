@@ -2,6 +2,7 @@
   import { env } from "@utility/utils";
   import Button from "./Button.svelte";
   import ExternalLink from "./ExternalLink.svelte";
+  import Download from "./Download.svelte";
 
   let clientVersion = $state();
   export function setVersion(version) {
@@ -26,6 +27,7 @@
   <ExternalLink href="https://github.com/ECHOES-from-the-Past/PAM">
     <Button>Source Code</Button>
   </ExternalLink>
+  <Download>For Musicologists</Download>
 
   <p id="client-version" class="text-base text-emerald-900 ml-auto">
     Version: {clientVersion}

@@ -31,6 +31,8 @@
     normalBorder: "#047857aa",
     rhombusBg: "#3c74f9aa",
     rhombusBorder: "#1310f9aa",
+    ncBg: "#9270f6aa",
+    ncBorder: "#9253f2aa"
   };
 
   /**
@@ -156,6 +158,7 @@
     const labels = [];
     const ncData = [];
     const ncData20 = [];
+    let has20Plus = false;
 
     for (let i = 0; i < chantSyls.length; i++) {
       const curSyl = chantSyls[i];
@@ -174,6 +177,7 @@
       const ncLen = curSyl.neumeComponents.length;
       labels.push(curSyl.syllableWord.text);
       if (ncLen >= 20){
+        has20Plus = true;
         ncData20.push(ncLen);
         ncData.push(0);
       }
@@ -183,25 +187,55 @@
       }
     }
 
-    return {
-      labels,
-      datasets: [
-        {
-          label: "Number of NCs",
-          data: ncData,
-          backgroundColor: new Array(ncData.length).fill(COLORS.normalBg),
-          borderColor: new Array(ncData.length).fill(COLORS.normalBorder),
-          borderWidth: 1,
-        },
-        {
-          label: "Number of NCs (20+)",
-          data: ncData20,
-          backgroundColor: new Array(ncData20.length).fill(draw('disc', COLORS.rhombusBg)),
-          borderColor: new Array(ncData20.length).fill(COLORS.rhombusBorder),
-          borderWidth: 1,
-        },
-      ],
-    };
+    if (has20Plus){
+      return {
+        labels,
+        datasets: [
+          {
+            label: "Number of NCs",
+            data: ncData,
+            backgroundColor: new Array(ncData.length).fill(COLORS.normalBg),
+            borderColor: new Array(ncData.length).fill(COLORS.normalBorder),
+            borderWidth: 1,
+          },
+          {
+            label: "Number of NCs (20+)",
+            data: ncData20,
+            backgroundColor: new Array(ncData20.length).fill(draw('plus', COLORS.ncBg)),
+            borderColor: new Array(ncData20.length).fill(COLORS.ncBorder),
+            borderWidth: 1,
+          },
+        ],
+      };
+    }
+    else{
+      return {
+        labels,
+        datasets: [
+          {
+            label: "Number of NCs",
+            data: ncData,
+            backgroundColor: new Array(ncData.length).fill(COLORS.normalBg),
+            borderColor: new Array(ncData.length).fill(COLORS.normalBorder),
+            borderWidth: 1,
+          }
+        ]
+      };
+    }
+  }
+
+  function getMaxNCs(chantSyls){
+    let max = -1;
+    for (let i = 0; i < chantSyls.length; i++) {
+      const curSyl = chantSyls[i];
+      const ncLen = curSyl.neumeComponents.length;
+      if (ncLen > max){
+        max = ncLen;
+      }
+    }
+    if (max >= 20)
+      return 20;
+    return max;
   }
 
   onMount(() => {
@@ -211,7 +245,7 @@
 
     if (isOldHispanic) {
       chantData = getChantDataOldHispanic(chant.syllables);
-
+      let maxNcs = getMaxNCs(chant.syllables);
       config = {
         titleText: "Number of Neume Components Across Chant",
         xText: "Text",
@@ -243,7 +277,7 @@
     }
 
     // Create the chart
-    new Chart(chart, {
+    const chartSettings = {
       type: "bar",
       data: chantData,
       options: {
@@ -290,8 +324,6 @@
             },
           },
           y: {
-            min: 0,
-            max: 20,
             stacked: true,
             title: {
               display: true,
@@ -305,7 +337,7 @@
             ticks: {
               //Chart cuts off at max of 20, so use 20+ for clarity when there's more than 20 NCs
               callback: function(val, index) {
-                if (val == 20){
+                if (val == 20 && chant.notationType == "old_hispanic"){
                   return "20+"
                 }
                 return val;
@@ -322,8 +354,13 @@
           margin: 0,
         },
       },
-    });
+    };
+    if (chant.notationType == "old_hispanic" && (getMaxNCs(chant.syllables) >= 20)){
+      chartSettings.options.scales.y.max = 20;
+    }
+    new Chart(chart, chartSettings);
   });
+
 </script>
 
 <div

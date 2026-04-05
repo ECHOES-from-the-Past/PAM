@@ -192,14 +192,14 @@
         labels,
         datasets: [
           {
-            label: "Number of NCs",
+            label: "Number of notes",
             data: ncData,
             backgroundColor: new Array(ncData.length).fill(COLORS.normalBg),
             borderColor: new Array(ncData.length).fill(COLORS.normalBorder),
             borderWidth: 1,
           },
           {
-            label: "Number of NCs (20+)",
+            label: "Number of notes (20+)",
             data: ncData20,
             backgroundColor: new Array(ncData20.length).fill(draw('plus', COLORS.ncBg)),
             borderColor: new Array(ncData20.length).fill(COLORS.ncBorder),

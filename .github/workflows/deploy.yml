@@ -4,12 +4,12 @@ name: Deploy to GitHub Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ['main']
-    paths: ['src/**', index.html, .github/workflows/*.yml, package.json]
+    branches: ["main"]
+    paths: ["src/**", index.html, .github/workflows/*.yml, package.json]
 
   # Automatic build for every week, on Sunday at 3:00 AM
   schedule:
-    - cron: '0 3 * * 0' 
+    - cron: "0 3 * * 0"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ permissions:
 
 # Allow one concurrent deployment
 concurrency:
-  group: 'deploy-production'
+  group: "deploy-production"
   cancel-in-progress: true
 
 jobs:
@@ -31,21 +31,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: ">=21.6.1"
-          cache: 'npm'
+          node-version: ">=25"
+          cache: "npm"
       - name: Install dependencies
         run: npm install
       - name: Build Webpage
         run: npm run build
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: production-artifact
-          path: './dist' # Upload dist repository
+          path: "./dist" # Upload dist repository
           overwrite: true
   database:
     name: Update list of chants from GABCtoMEI
@@ -53,16 +53,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: ">=21.6.1"
-          cache: 'npm'
+          node-version: ">=25"
+          cache: "npm"
       - name: Install dependencies
         run: npm install
       - name: Get the artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: production-artifact
           path: ./dist
@@ -71,10 +71,10 @@ jobs:
         env:
           NODE_ENV: production
       - name: Reupload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: production-artifact
-          path: './dist' # Upload dist repository
+          path: "./dist" # Upload dist repository
           retention-days: 7
           overwrite: true
   deploy:
@@ -86,17 +86,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
       - name: Get the artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: production-artifact
           path: ./dist
       - name: Upload Page artifact to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: './dist' # Upload dist repository
+          path: "./dist" # Upload dist repository
           retention-days: 7
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -40,7 +40,7 @@ let data = await octokit.request(`GET /repos/${OWNER}/${REPO}/git/trees/${BRANCH
   // tree_sha: 'main',
   accept: "application/vnd.github+json",
   headers: {
-    "X-GitHub-Api-Version": "2022-11-28",
+    "X-GitHub-Api-Version": "2026-03-10",
   },
   recursive: "true",
 });

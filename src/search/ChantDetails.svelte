@@ -39,17 +39,28 @@
         "PEM Database URL": chant.pemUrls,
         "Music Script": notationTypeToString(chant.notationType),
         "Possible Mode(s)":
-            chant.mode != null ? chant.mode.length == 0 ? "Unknown" : chant.mode.join(", ") : null,
-        "Mode Analysis": chant.modeDescription != null ? chant.modeDescription + modeMoreInfoLink.outerHTML : null,
+            chant.mode != null
+                ? chant.mode.length == 0
+                    ? "Unknown"
+                    : chant.mode.join(", ")
+                : null,
+        "Mode Analysis":
+            chant.modeDescription != null
+                ? chant.modeDescription + modeMoreInfoLink.outerHTML
+                : null,
         "MEI File": chant.fileName,
     };
 
     onMount(() => {
         for (let info in allInfo) {
-            if (info == "Mode Analysis" && (chant.notationType == 'square' || chant.notationType == 'old_hispanic')) {
+            if (
+                info == "Mode Analysis" &&
+                (chant.notationType == "square" ||
+                    chant.notationType == "old_hispanic")
+            ) {
                 continue;
             }
-            
+
             let p = document.createElement("p");
 
             // Special rendering for PEM Database URL
@@ -62,11 +73,15 @@
                     a.innerText = url;
                     p.appendChild(a);
                     // Add "or" if it is not the last URL
-                    if (allInfo[info].indexOf(url) != allInfo[info].length - 1) {
+                    if (
+                        allInfo[info].indexOf(url) !=
+                        allInfo[info].length - 1
+                    ) {
                         p.innerHTML += " or ";
                     }
                 }
-            } else if (info == "MEI File") {  // Links to the GitHub MEI files
+            } else if (info == "MEI File") {
+                // Links to the GitHub MEI files
                 p.innerHTML = `<b>${info}</b>: `;
                 const rootPamMeiDatabase =
                     "https://github.com/ECHOES-from-the-Past/PAM-MEI-Database/blob/main/";
@@ -74,21 +89,23 @@
                 let fileName = chant.fileName;
                 let a = document.createElement("a");
                 let chantLink;
-                if (chant.notationType == "square"){
-                    chantLink = "Square_MEIs/";
-                }
-                else if (chant.notationType == "aquitanian"){
-                    chantLink = "Aquitanian_MEIs/";
-                }
-                else if (chant.notationType == "old_hispanic"){
-                    chantLink = "Old_Hispanic_MEIs/";
-                }
-                a.href = rootPamMeiDatabase + chantLink + fileName;
+                // if (chant.notationType == "square"){
+                //     chantLink = "Square_MEIs/";
+                // }
+                // else if (chant.notationType == "aquitanian"){
+                //     chantLink = "Aquitanian_MEIs/";
+                // }
+                // else if (chant.notationType == "old_hispanic"){
+                //     chantLink = "Old_Hispanic_MEIs/";
+                // }
+                // a.href = rootPamMeiDatabase + chantLink + fileName;
+                a.href = rootPamMeiDatabase + fileName;
                 a.target = "_blank";
                 a.innerText = `${fileName.split("/").pop()} (GitHub)`; // showing the file name only
                 p.appendChild(a);
             } else if (
-                (chant.notationType == "square" || chant.notationType == "old_hispanic") &&
+                (chant.notationType == "square" ||
+                    chant.notationType == "old_hispanic") &&
                 info == "Possible Mode(s)"
             ) {
                 // Remove mode suggestion for square and Old Hispanic notation
